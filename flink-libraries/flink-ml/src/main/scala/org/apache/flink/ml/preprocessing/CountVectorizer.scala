@@ -18,21 +18,58 @@
 
 package org.apache.flink.ml.preprocessing
 
-import org.apache.flink.ml.pipeline.Transformer
+import org.apache.flink.api.scala.DataSet
+import org.apache.flink.ml.common.{Parameter, ParameterMap}
+import org.apache.flink.ml.pipeline.{FitOperation, Transformer}
+import org.apache.flink.ml.preprocessing.CountVectorizer.{Binary, Lowercase}
+import org.apache.flink.ml.math.{SparseMatrix, Vector}
 
 class CountVectorizer extends Transformer[CountVectorizer] {
 
+  /**
+    * Convert all characters to lowercase before tokenizing
+    *
+    * @param lowercase default value is True
+    */
+  def setLowercase(lowercase: Boolean): CountVectorizer = {
+    parameters.add(Lowercase, lowercase)
+    this
+  }
+
+  def setBinary(binary: Boolean): CountVectorizer = {
+    parameters.add(Binary, binary)
+    this
+  }
 }
 
 object CountVectorizer {
 
+  // ====================================== Parameters =============================================
 
-  
+  case object Lowercase extends Parameter[Boolean] {
+    override val defaultValue: Option[Boolean] = Some(true)
+  }
+
+  case object Binary extends Parameter[Boolean] {
+    override val defaultValue: Option[Boolean] = Some(false)
+  }
 
   // =================================== Factory methods ===========================================
+
   def apply(): CountVectorizer = {
     new CountVectorizer()
   }
 
+  // ====================================== Operations =============================================
+
+  implicit def fitCountVectorizer[T <: Vector] = new FitOperation[CountVectorizer, T] {
+    override def fit(instance: CountVectorizer, fitParameters: ParameterMap, input: DataSet[T]): Unit = {
+
+    }
+  }
+
+  private def createCountMatrix[T <: SparseMatrix](dataSet: DataSet[T]) : SparseMatrix = {
+    
+  }
 
 }
