@@ -21,7 +21,7 @@ package org.apache.flink.ml.preprocessing
 import org.apache.flink.api.scala.DataSet
 import org.apache.flink.ml.common.{Parameter, ParameterMap}
 import org.apache.flink.ml.pipeline.{FitOperation, Transformer}
-import org.apache.flink.ml.preprocessing.CountVectorizer.{Binary, Lowercase}
+import org.apache.flink.ml.preprocessing.CountVectorizer.{Binary, Lowercase, StopWords}
 import org.apache.flink.ml.math.{SparseMatrix, Vector}
 
 class CountVectorizer extends Transformer[CountVectorizer] {
@@ -33,6 +33,12 @@ class CountVectorizer extends Transformer[CountVectorizer] {
     */
   def setLowercase(lowercase: Boolean): CountVectorizer = {
     parameters.add(Lowercase, lowercase)
+    this
+  }
+
+  def setStopWords(stopWords: Array[String]): CountVectorizer = {
+    require(stopWords.length > 0, "Stop Words cannot be an empty list")
+    parameters.add(StopWords, stopWords)
     this
   }
 
@@ -48,6 +54,10 @@ object CountVectorizer {
 
   case object Lowercase extends Parameter[Boolean] {
     override val defaultValue: Option[Boolean] = Some(true)
+  }
+
+  case object StopWords extends Parameter[Array[String]] {
+    override val defaultValue: Option[Array[String]] = Some(null)
   }
 
   case object Binary extends Parameter[Boolean] {
